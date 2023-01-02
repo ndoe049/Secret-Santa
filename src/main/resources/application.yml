@@ -1,0 +1,27 @@
+spring:
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+  datasource:
+    platform: postgres
+    url: {$DATASOURCE_URL: jdbc:postgresql://localhost:5432/SecretSanta}
+    username: {$DATASOURCE_USERNAME: db_user}
+    password: {$DATASOURCE_PASSWORD: db_password}
+    driverClassName: org.postgresql.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          cognito:
+            clientId: {$OAUTH_CLIENT_ID: client_id}
+            clientSecret: {$OAUTH_CLIENT_SECRET: secr3t}
+            scope: openid
+            redirect-uri: http://localhost:8080/login/oauth2/code/cognito
+            clientName: Secret Santa API
+        provider:
+          cognito:
+            issuerUri: {$OAUTH_URL: https://cognito-idp.amazonaws.com/us-east-1}
+            user-name-attribute: cognito:username
