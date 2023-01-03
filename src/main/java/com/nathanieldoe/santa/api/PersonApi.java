@@ -1,4 +1,4 @@
-package com.nathanieldoe.santa.controller;
+package com.nathanieldoe.santa.api;
 
 import com.nathanieldoe.santa.model.Person;
 

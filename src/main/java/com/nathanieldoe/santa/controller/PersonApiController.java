@@ -1,9 +1,12 @@
 package com.nathanieldoe.santa.controller;
 
+import com.nathanieldoe.santa.api.PersonApi;
+import com.nathanieldoe.santa.api.PersonApiImpl;
 import com.nathanieldoe.santa.db.PersonRepository;
 import com.nathanieldoe.santa.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -11,35 +14,36 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/person")
-public class PersonApiController implements PersonApi {
+@PreAuthorize("isAuthenticated()")
+public class PersonApiController {
 
-    @Autowired
-    PersonRepository repository;
+    PersonApiImpl api;
 
-    @Override
-    @GetMapping("list")
-    public List<Person> list() {
-        return repository.findAll();
+    public PersonApiController(PersonApiImpl api) {
+        this.api = api;
     }
 
-    @Override
+    @GetMapping("list")
+    public List<Person> list() {
+        return api.list();
+    }
+
     @PostMapping
     public Person createOrUpdate(@RequestBody Person person) {
         if (person == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be persisted");
         }
 
-        return repository.save(person);
+        return api.createOrUpdate(person);
     }
 
-    @Override
     @DeleteMapping
     public void delete(@RequestBody Person person) {
         if (person == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to delete");
         }
 
-        repository.delete(person);
+        api.delete(person);
     }
 
 }
