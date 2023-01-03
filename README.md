@@ -1,4 +1,4 @@
-# Secret Santa API 🎅🏻
+# Secret Santa API 🎅🏻🎄
 
 This project is the backend API / engine for generating secret santa pairings. 
 
