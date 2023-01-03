@@ -8,6 +8,14 @@
 
 name: Java CI with Maven
 
+env:
+  DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
+  DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
+  DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
+  OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+  OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+  OAUTH_URL: ${{ secrets.OAUTH_URL }}
+  
 on:
   push:
     branches: [ "develop" ]
