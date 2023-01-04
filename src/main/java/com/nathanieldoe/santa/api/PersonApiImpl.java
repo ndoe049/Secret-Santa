@@ -23,6 +23,11 @@ public class PersonApiImpl implements PersonApi {
     }
 
     @Override
+    public Person fetchById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    @Override
     public Person createOrUpdate(Person person) {
         if (person == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be persisted");
