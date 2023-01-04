@@ -1,5 +1,3 @@
----
-
 spring:
   profiles:
     active: dev
@@ -17,21 +15,27 @@ spring:
     driverClassName: org.postgresql.Driver
   security:
     oauth2:
-      client:
-        registration:
-          cognito:
-            clientId: "${OAUTH_CLIENT_ID: client_id}"
-            clientSecret: "${OAUTH_CLIENT_SECRET: secr3t}"
-            scope: openid
-            redirect-uri: http://localhost:8080/login/oauth2/code/cognito
-            clientName: Secret Santa API
-        provider:
-          cognito:
-            issuerUri: "${OAUTH_URL: https://cognito-idp.amazonaws.com/us-east-1}"
-            user-name-attribute: username
-logging:
-  level:
-    web: TRACE
-    org:
-      springframework:
-        web: TRACE
+      resourceserver:
+        jwt:
+          token-info-uri: "${OAUTH_URL: https://cognito-idp.amazonaws.com/us-east-1}"
+
+
+management:
+  endpoint:
+    info:
+      enabled: true
+    health:
+      probes:
+        enabled: true
+      show-details: "ALWAYS"
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+#logging:
+#  level:
+#    web: TRACE
+#    org:
+#      springframework:
+#        web: TRACE

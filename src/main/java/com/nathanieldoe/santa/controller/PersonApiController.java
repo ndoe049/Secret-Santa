@@ -1,10 +1,10 @@
 package com.nathanieldoe.santa.controller;
 
-import com.nathanieldoe.santa.api.PersonApi;
 import com.nathanieldoe.santa.api.PersonApiImpl;
-import com.nathanieldoe.santa.db.PersonRepository;
 import com.nathanieldoe.santa.model.Person;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +18,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/person")
 @PreAuthorize("isAuthenticated()")
+@SecurityRequirement(name = "Secret Santa API")
+@OpenAPIDefinition(info = @Info(title = "Person API", description = "Person Information"))
 public class PersonApiController {
 
     PersonApiImpl api;
@@ -26,16 +28,31 @@ public class PersonApiController {
         this.api = api;
     }
 
+
+    /**
+     * @return All of the {@link Person}
+     */
     @GetMapping(path = "list", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Person>> list() {
         return ResponseEntity.of(Optional.ofNullable(api.list()));
     }
 
+
+    /**
+     * @param id The ID of the {@link Person} to find
+     *
+     * @return The {@link Person} object if found
+     */
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Person> findById(@PathVariable Long id) {
         return ResponseEntity.of(Optional.ofNullable(api.fetchById(id)));
     }
 
+    /**
+     * @param person The {@link Person} object to create or update
+     *
+     * @return The {@link Person} that was created or updated
+     */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Person> createOrUpdate(@RequestBody Person person) {
         if (person == null) {
@@ -45,6 +62,10 @@ public class PersonApiController {
         return ResponseEntity.of(Optional.ofNullable(api.createOrUpdate(person)));
     }
 
+
+    /**
+     * @param person The {@link Person} object to delete
+     */
     @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@RequestBody Person person) {
         if (person == null) {
