@@ -2,6 +2,8 @@ package com.nathanieldoe.santa.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "person")
 public class Person {
@@ -18,6 +20,12 @@ public class Person {
 
     @Column(name = "email_address")
     String emailAddress;
+
+    @OneToMany(mappedBy = "id")
+    @JoinTable(name="exclusion_mapping",
+            joinColumns = @JoinColumn( name="giver_id"),
+            inverseJoinColumns = @JoinColumn( name="receiver_id"))
+    List<Person> exclusions;
 
     public Person() {
     }

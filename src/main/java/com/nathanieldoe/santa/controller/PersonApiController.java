@@ -3,8 +3,10 @@ package com.nathanieldoe.santa.controller;
 import com.nathanieldoe.santa.api.PersonApiImpl;
 import com.nathanieldoe.santa.model.Person;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +18,10 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Tag(name = "Person API")
 @RequestMapping("/person")
 @PreAuthorize("isAuthenticated()")
-@SecurityRequirement(name = "Secret Santa API")
+@SecurityRequirement(name = "Bearer-Token")
 @OpenAPIDefinition(info = @Info(title = "Person API", description = "Person Information"))
 public class PersonApiController {
 
@@ -32,6 +35,7 @@ public class PersonApiController {
     /**
      * @return All of the {@link Person}
      */
+    @Operation(summary = "Find all people")
     @GetMapping(path = "list", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Person>> list() {
         return ResponseEntity.of(Optional.ofNullable(api.list()));
@@ -43,6 +47,7 @@ public class PersonApiController {
      *
      * @return The {@link Person} object if found
      */
+    @Operation(summary = "Find person by ID")
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Person> findById(@PathVariable Long id) {
         return ResponseEntity.of(Optional.ofNullable(api.fetchById(id)));
@@ -53,7 +58,8 @@ public class PersonApiController {
      *
      * @return The {@link Person} that was created or updated
      */
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Create / update person")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Person> createOrUpdate(@RequestBody Person person) {
         if (person == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be persisted");
@@ -66,7 +72,8 @@ public class PersonApiController {
     /**
      * @param person The {@link Person} object to delete
      */
-    @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Delete person")
+    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@RequestBody Person person) {
         if (person == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to delete");

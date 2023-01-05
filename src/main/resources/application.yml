@@ -2,11 +2,11 @@ spring:
   profiles:
     active: dev
   jpa:
-    show-sql: true
     generate-ddl: true
     hibernate:
       ddl-auto: update
     database: postgresql
+    open-in-view: false
   datasource:
     platform: postgres
     url: "${DATASOURCE_URL: jdbc:postgresql://localhost:5432/SecretSanta}"
@@ -19,6 +19,9 @@ spring:
         jwt:
           token-info-uri: "${OAUTH_URL: https://cognito-idp.amazonaws.com/us-east-1}"
 
+security:
+  basic:
+    enabled: false
 
 management:
   endpoint:
