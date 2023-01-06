@@ -5,12 +5,16 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The representation of a person (i.e. santa)
+ */
 @Entity
 @Table(name = "person")
 public class Person {
 
     @Id
     @GeneratedValue
+    @Column(nullable = false)
     Long id;
 
     @Column(name = "first_name")
@@ -22,15 +26,20 @@ public class Person {
     @Column(name = "email_address")
     String emailAddress;
 
-    @OneToMany
-    @JoinTable(name="exclusion_mapping",
-            joinColumns = @JoinColumn( name="giver_id"),
-            inverseJoinColumns = @JoinColumn( name="receiver_id"))
-    List<Person> exclusions = new ArrayList<>();
+    /**
+     * People that should not be allowed to be picked when generating Santa combinations
+     */
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    List<Exclusion> exclusions = new ArrayList<>();
 
     public Person() {
     }
 
+    /**
+     * @param firstName First name
+     * @param lastName Last name
+     * @param emailAddress Email address to receive alerts
+     */
     public Person(String firstName, String lastName, String emailAddress) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -69,12 +78,34 @@ public class Person {
         this.emailAddress = emailAddress;
     }
 
-    public List<Person> getExclusions() {
+    public List<Exclusion> getExclusions() {
         return exclusions;
     }
 
-    public void setExclusions(List<Person> exclusions) {
+    public void setExclusions(List<Exclusion> exclusions) {
         this.exclusions = exclusions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Person person = (Person) o;
+
+        if (!getFirstName().equals(person.getFirstName())) return false;
+        if (!getLastName().equals(person.getLastName())) return false;
+        if (!getEmailAddress().equals(person.getEmailAddress())) return false;
+        return getExclusions() != null ? getExclusions().equals(person.getExclusions()) : person.getExclusions() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getFirstName().hashCode();
+        result = 31 * result + getLastName().hashCode();
+        result = 31 * result + getEmailAddress().hashCode();
+        result = 31 * result + (getExclusions() != null ? getExclusions().hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -84,6 +115,7 @@ public class Person {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
+                ", exclusions='" + exclusions.size() + '\'' +
                 '}';
     }
 

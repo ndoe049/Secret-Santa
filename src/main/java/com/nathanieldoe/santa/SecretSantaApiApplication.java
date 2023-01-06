@@ -1,7 +1,6 @@
 package com.nathanieldoe.santa;
 
 import com.nathanieldoe.santa.db.PersonRepository;
-import com.nathanieldoe.santa.model.Person;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
