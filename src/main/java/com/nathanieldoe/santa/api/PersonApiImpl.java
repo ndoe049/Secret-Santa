@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PersonApiImpl implements PersonApi {
@@ -25,6 +26,21 @@ public class PersonApiImpl implements PersonApi {
     @Override
     public Person fetchById(Long id) {
         return repository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Person addExclusion(Long personId, Long exclusionId) {
+        Optional<Person> lookupResult = repository.findById(personId);
+        if (lookupResult.isPresent()) {
+            Person p = lookupResult.get();
+            Optional<Person> exclusionResult = repository.findById(exclusionId);
+            if (exclusionResult.isPresent()) {
+                p.getExclusions().add(exclusionResult.get());
+            }
+
+            return p;
+        }
+        return null;
     }
 
     @Override

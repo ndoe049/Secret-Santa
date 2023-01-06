@@ -9,6 +9,8 @@ public interface PersonApi {
 
     Person fetchById(Long id);
 
+    Person addExclusion(Long personId, Long exclusionId);
+
     Person createOrUpdate(Person person);
 
     void delete(Person person);

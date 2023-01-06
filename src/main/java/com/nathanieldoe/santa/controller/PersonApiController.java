@@ -53,6 +53,16 @@ public class PersonApiController {
         return ResponseEntity.of(Optional.ofNullable(api.fetchById(id)));
     }
 
+    @Operation(summary = "Adds a person to the list of exclusions for a person")
+    @PutMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Person> addExclusion(@PathVariable("id") Long personId, @RequestBody Person exclusion) {
+        if (exclusion == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be excluded");
+        }
+
+        return ResponseEntity.of(Optional.ofNullable(api.addExclusion(personId, exclusion.getId())));
+    }
+
     /**
      * @param person The {@link Person} object to create or update
      *

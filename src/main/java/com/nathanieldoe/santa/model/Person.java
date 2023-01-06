@@ -2,6 +2,7 @@ package com.nathanieldoe.santa.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,11 +22,11 @@ public class Person {
     @Column(name = "email_address")
     String emailAddress;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany
     @JoinTable(name="exclusion_mapping",
             joinColumns = @JoinColumn( name="giver_id"),
             inverseJoinColumns = @JoinColumn( name="receiver_id"))
-    List<Person> exclusions;
+    List<Person> exclusions = new ArrayList<>();
 
     public Person() {
     }
@@ -66,6 +67,14 @@ public class Person {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public List<Person> getExclusions() {
+        return exclusions;
+    }
+
+    public void setExclusions(List<Person> exclusions) {
+        this.exclusions = exclusions;
     }
 
     @Override
