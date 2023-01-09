@@ -1,6 +1,8 @@
 package com.nathanieldoe.santa.controller;
 
+import com.nathanieldoe.santa.api.model.ExclusionRequest;
 import com.nathanieldoe.santa.api.PersonApiImpl;
+import com.nathanieldoe.santa.api.exception.InvalidExclusionException;
 import com.nathanieldoe.santa.model.Person;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,14 +55,27 @@ public class PersonApiController {
         return ResponseEntity.of(Optional.ofNullable(api.fetchById(id)));
     }
 
+    /**
+     * @param personId The ID of the {@link  Person} to add an exclusion to
+     * @param request The exclusion to add
+     * @return The {@link Person} that was updated
+     */
     @Operation(summary = "Adds a person to the list of exclusions for a person")
     @PutMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Person> addExclusion(@PathVariable("id") Long personId, @RequestBody Person exclusion) {
-        if (exclusion == null) {
+    public ResponseEntity<Person> addExclusion(@PathVariable("id") Long personId, @RequestBody ExclusionRequest request) {
+        if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be excluded");
         }
 
-        return ResponseEntity.of(Optional.ofNullable(api.addExclusion(personId, exclusion.getId())));
+        Optional<Person> response;
+
+        try {
+            response = Optional.ofNullable(api.addExclusion(personId, request));
+        } catch (InvalidExclusionException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+
+        return ResponseEntity.of(response);
     }
 
     /**

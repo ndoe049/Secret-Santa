@@ -1,5 +1,7 @@
 package com.nathanieldoe.santa.api;
 
+import com.nathanieldoe.santa.api.exception.InvalidExclusionException;
+import com.nathanieldoe.santa.api.model.ExclusionRequest;
 import com.nathanieldoe.santa.db.PersonRepository;
 import com.nathanieldoe.santa.model.Exclusion;
 import com.nathanieldoe.santa.model.Person;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -38,31 +41,37 @@ public class PersonApiImpl implements PersonApi {
     }
 
     @Override
-    public Person addExclusion(Long personId, Long exclusionId) {
-        if (Objects.equals(personId, exclusionId)) {
-            LOG.warn("A person is not allowed to add themselves as an exclusion");
-            return null;
+    public Person addExclusion(Long personId, ExclusionRequest request) throws InvalidExclusionException {
+        if (request == null) {
+            throw new InvalidExclusionException("Exclusion provided was not valid");
+        } else if (Objects.equals(personId, request.exclusion().getId())) {
+            throw new InvalidExclusionException("A person is not allowed to add themselves as an exclusion");
         }
 
         Optional<Person> lookupResult = personRepository.findById(personId);
         if (lookupResult.isPresent()) {
             Person p = lookupResult.get();
-            Optional<Person> exclusionPersonResult = personRepository.findById(exclusionId);
+            Optional<Person> exclusionPersonResult = personRepository.findById(request.exclusion().getId());
             if (exclusionPersonResult.isPresent()) {
-                LOG.info("Adding exclusion {} to {}", exclusionId, personId);
+                int year = request.year() > 0 ? request.year() : LocalDate.now().getYear();
+                LOG.info("Adding exclusion {} to {} for {}", request.exclusion().getId(), personId, year);
 
-                p.getExclusions().add(new Exclusion(exclusionPersonResult.get(), LocalDate.now().getYear()));
+                p.getExclusions().add(new Exclusion(exclusionPersonResult.get(), year));
                 personRepository.save(p);
 
                 return p;
             } else {
-                LOG.warn("Unable to find exclusion person with ID {}", exclusionId);
+                LOG.warn("Unable to find exclusion person with ID {}", request.exclusion().getId());
+                throw new InvalidExclusionException(
+                        MessageFormat.format("Unable to find exclusion person with ID {0}",
+                                request.exclusion().getId()));
             }
         } else {
             LOG.warn("Unable to find person with ID {}", personId);
         }
 
-        return null;
+        throw new InvalidExclusionException(
+                MessageFormat.format("Unable to find person with ID {0}", personId));
     }
 
     @Override
