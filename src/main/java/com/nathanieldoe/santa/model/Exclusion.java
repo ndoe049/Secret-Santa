@@ -1,9 +1,9 @@
 package com.nathanieldoe.santa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nathanieldoe.santa.util.PersonExclusionSerializer;
 import jakarta.persistence.*;
-import net.minidev.json.annotate.JsonIgnore;
 
 /**
  * The representation of an exclusion to a person for a given year.

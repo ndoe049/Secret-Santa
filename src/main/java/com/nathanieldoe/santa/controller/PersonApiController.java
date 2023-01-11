@@ -21,11 +21,13 @@ import java.util.Optional;
 
 @RestController
 @Tag(name = "Person API")
-@RequestMapping("/person")
+@RequestMapping(PersonApiController.BASE_PATH)
 @PreAuthorize("isAuthenticated()")
 @SecurityRequirement(name = "Bearer-Token")
 @OpenAPIDefinition(info = @Info(title = "Person API", description = "Person Information"))
 public class PersonApiController {
+
+    public static final String BASE_PATH = "/person";
 
     PersonApiImpl api;
 
@@ -95,16 +97,12 @@ public class PersonApiController {
 
 
     /**
-     * @param person The {@link Person} object to delete
+     * @param personId The ID of the {@link Person} object to delete
      */
     @Operation(summary = "Delete person")
-    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> delete(@RequestBody Person person) {
-        if (person == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to delete");
-        }
-
-        api.delete(person);
+    @DeleteMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> delete(@PathVariable("id") Long personId) {
+        api.delete(personId);
         return ResponseEntity.ok().build();
     }
 

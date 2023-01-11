@@ -1,7 +1,9 @@
 package com.nathanieldoe.santa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,11 @@ public class Person {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
+    }
+
+    @JsonIgnore
+    public String getFullName() {
+        return MessageFormat.format("{0} {1}", getFirstName(), getLastName());
     }
 
     public Long getId() {

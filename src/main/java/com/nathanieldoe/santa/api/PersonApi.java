@@ -15,6 +15,6 @@ public interface PersonApi {
 
     Person createOrUpdate(Person person);
 
-    void delete(Person person);
+    void delete(Long personId);
 
 }

@@ -54,7 +54,7 @@ public class PersonApiImpl implements PersonApi {
             Optional<Person> exclusionPersonResult = personRepository.findById(request.exclusion().getId());
             if (exclusionPersonResult.isPresent()) {
                 int year = request.year() > 0 ? request.year() : LocalDate.now().getYear();
-                LOG.info("Adding exclusion {} to {} for {}", request.exclusion().getId(), personId, year);
+                LOG.info("Adding exclusion {} to {} for {}", exclusionPersonResult.get().getFullName(), p.getFullName(), year);
 
                 p.getExclusions().add(new Exclusion(exclusionPersonResult.get(), year));
                 personRepository.save(p);
@@ -81,17 +81,14 @@ public class PersonApiImpl implements PersonApi {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be persisted");
         }
 
+        LOG.info("Creating / Updating : {}", person.getFullName());
         return personRepository.save(person);
     }
 
     @Override
-    public void delete(Person person) {
-        if (person == null) {
-            LOG.warn("No person to persist!");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to delete");
-        }
-
-        personRepository.delete(person);
+    public void delete(Long personId) {
+        LOG.info("Deleting : {}", personId);
+        personRepository.deleteById(personId);
     }
 
 }
