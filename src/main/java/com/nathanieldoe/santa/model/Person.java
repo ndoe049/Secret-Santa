@@ -31,7 +31,7 @@ public class Person {
     /**
      * People that should not be allowed to be picked when generating Santa combinations
      */
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Exclusion> exclusions = new ArrayList<>();
 
     public Person() {

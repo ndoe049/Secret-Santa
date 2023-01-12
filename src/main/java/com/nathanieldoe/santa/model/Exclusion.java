@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nathanieldoe.santa.util.PersonExclusionSerializer;
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 /**
  * The representation of an exclusion to a person for a given year.
  * Each person may have multiple exclusions associated with themselves.
@@ -19,21 +21,26 @@ public class Exclusion {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "person_id", nullable = false)
+    @JsonIgnore
+    Person sender;
+
+    @ManyToOne
     @JsonSerialize(using = PersonExclusionSerializer.class)
     Person receiver;
 
-    @Column(nullable = false)
-    Integer year;
+    @Column(name = "exclude_year", nullable = false)
+    int year;
 
     public Exclusion() {
     }
 
     /**
+     * @param sender Person that is the sender
      * @param receiver Person to exclude from being picked as a receiver
      * @param year The secret santa year the exclusion should apply to
      */
-    public Exclusion(Person receiver, Integer year) {
+    public Exclusion(Person sender, Person receiver, int year) {
+        this.sender = sender;
         this.receiver = receiver;
         this.year = year;
     }
@@ -54,11 +61,11 @@ public class Exclusion {
         this.receiver = receiver;
     }
 
-    public Integer getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(Integer year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
@@ -70,13 +77,13 @@ public class Exclusion {
         Exclusion exclusion = (Exclusion) o;
 
         if (!getReceiver().equals(exclusion.getReceiver())) return false;
-        return getYear().equals(exclusion.getYear());
+        return Objects.equals(getYear(), exclusion.getYear());
     }
 
     @Override
     public int hashCode() {
         int result = getReceiver().hashCode();
-        result = 31 * result + getYear().hashCode();
+        result = 31 * result + getYear();
         return result;
     }
 
@@ -84,7 +91,8 @@ public class Exclusion {
     public String toString() {
         return "Exclusion{" +
                 "id=" + id +
-                ", receiver=" + receiver.getId() +
+                ", sender=" + sender.id +
+                ", receiver=" + receiver +
                 ", year=" + year +
                 '}';
     }

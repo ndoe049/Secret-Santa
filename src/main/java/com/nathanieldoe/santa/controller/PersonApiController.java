@@ -63,7 +63,7 @@ public class PersonApiController {
      * @return The {@link Person} that was updated
      */
     @Operation(summary = "Adds a person to the list of exclusions for a person")
-    @PutMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "{id}/exclude", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Person> addExclusion(@PathVariable("id") Long personId, @RequestBody ExclusionRequest request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be excluded");
@@ -100,7 +100,7 @@ public class PersonApiController {
      * @param personId The ID of the {@link Person} object to delete
      */
     @Operation(summary = "Delete person")
-    @DeleteMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable("id") Long personId) {
         api.delete(personId);
         return ResponseEntity.ok().build();

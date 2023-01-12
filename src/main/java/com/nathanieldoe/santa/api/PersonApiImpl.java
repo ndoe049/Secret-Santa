@@ -56,7 +56,7 @@ public class PersonApiImpl implements PersonApi {
                 int year = request.year() > 0 ? request.year() : LocalDate.now().getYear();
                 LOG.info("Adding exclusion {} to {} for {}", exclusionPersonResult.get().getFullName(), p.getFullName(), year);
 
-                p.getExclusions().add(new Exclusion(exclusionPersonResult.get(), year));
+                p.getExclusions().add(new Exclusion(p, exclusionPersonResult.get(), year));
                 personRepository.save(p);
 
                 return p;
@@ -88,7 +88,12 @@ public class PersonApiImpl implements PersonApi {
     @Override
     public void delete(Long personId) {
         LOG.info("Deleting : {}", personId);
-        personRepository.deleteById(personId);
+        Optional<Person> p = personRepository.findById(personId);
+        if (p.isPresent()) {
+            personRepository.delete(p.get());
+        } else {
+            personRepository.deleteById(personId);
+        }
     }
 
 }

@@ -1,6 +1,8 @@
 package com.nathanieldoe.santa;
 
+import com.nathanieldoe.santa.db.ExclusionRepository;
 import com.nathanieldoe.santa.db.PersonRepository;
+import com.nathanieldoe.santa.model.Exclusion;
 import com.nathanieldoe.santa.model.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +27,8 @@ class PersonIntegrationTest {
 
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private ExclusionRepository exclusionRepository;
 
 
     /**
@@ -68,16 +73,69 @@ class PersonIntegrationTest {
 
         Person tony = tonyResult.get();
         personRepository.delete(tony);
+
+        tonyResult = personRepository.findFirstByEmailAddressOrderByLastNameAsc("ironman@avengers.com");
+        assertThat(tonyResult).isNotPresent();
     }
 
     @Test
     void addExclusion() {
-        //TODO
+        List<Person> all = personRepository.findAll();
+        assertThat(all).isNotNull().isNotEmpty().hasSizeGreaterThanOrEqualTo(2);
+
+        Person first = all.get(0);
+        Person second = all.get(1);
+
+        first.getExclusions().add(new Exclusion(first, second, LocalDate.now().getYear()));
+
+        testEntityManager.persist(first);
+        testEntityManager.flush();
+
+        List<Exclusion> exclusions = exclusionRepository.findAll();
+        assertThat(exclusions).isNotNull().isNotEmpty().hasSize(1);
     }
 
     @Test
     void deletePersonWithExclusion() {
-        //TODO
+        addExclusion();
+
+        Person first = personRepository.findAll().get(0);
+        testEntityManager.remove(first);
+        testEntityManager.flush();
+
+        assertThat(exclusionRepository.findAll()).isNotNull().isEmpty();
+        assertThat(personRepository.findAll()).isNotNull().hasSize(1);
+    }
+
+    @Test
+    void addCyclicalExclusions() {
+        List<Person> all = personRepository.findAll();
+        assertThat(all).isNotNull().isNotEmpty().hasSizeGreaterThanOrEqualTo(2);
+
+        Person first = all.get(0);
+        Person second = all.get(1);
+
+        first.getExclusions().add(new Exclusion(first, second, LocalDate.now().getYear()));
+        second.getExclusions().add(new Exclusion(second, first, LocalDate.now().getYear()));
+
+        testEntityManager.persist(first);
+        testEntityManager.persist(second);
+        testEntityManager.flush();
+
+        List<Exclusion> exclusions = exclusionRepository.findAll();
+        assertThat(exclusions).isNotNull().isNotEmpty().hasSize(2);
+    }
+
+    @Test
+    void deletePersonWithCyclicalExclusion() {
+        addCyclicalExclusions();
+
+        Person first = personRepository.findAll().get(0);
+        testEntityManager.remove(first);
+        testEntityManager.flush();
+
+        assertThat(exclusionRepository.findAll()).isNotNull().isEmpty();
+        assertThat(personRepository.findAll()).isNotNull().hasSize(1);
     }
 
 }
