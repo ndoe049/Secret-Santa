@@ -31,11 +31,18 @@ public class Person {
     /**
      * People that should not be allowed to be picked when generating Santa combinations
      */
-    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER)
     List<Exclusion> exclusions = new ArrayList<>();
 
-    public Person() {
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver")
+    List<Exclusion> excludedBy = new ArrayList<>();
+
+
+    /*
+     * JPA no-arg
+     */
+    public Person() {}
 
     /**
      * @param firstName First name
@@ -47,6 +54,13 @@ public class Person {
         this.lastName = lastName;
         this.emailAddress = emailAddress;
     }
+
+//    public void addExclusion(Exclusion exclusion) {
+//        if (Objects.nonNull(exclusion)) {
+//            exclusion.setSender(this);
+//            this.exclusions.add(exclusion);
+//        }
+//    }
 
     @JsonIgnore
     public String getFullName() {
@@ -89,30 +103,16 @@ public class Person {
         return exclusions;
     }
 
-    public void setExclusions(List<Exclusion> exclusions) {
+    public void setExclusions(ArrayList<Exclusion> exclusions) {
         this.exclusions = exclusions;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Person person = (Person) o;
-
-        if (!getFirstName().equals(person.getFirstName())) return false;
-        if (!getLastName().equals(person.getLastName())) return false;
-        if (!getEmailAddress().equals(person.getEmailAddress())) return false;
-        return getExclusions() != null ? getExclusions().equals(person.getExclusions()) : person.getExclusions() == null;
+    public List<Exclusion> getExcludedBy() {
+        return excludedBy;
     }
 
-    @Override
-    public int hashCode() {
-        int result = getFirstName().hashCode();
-        result = 31 * result + getLastName().hashCode();
-        result = 31 * result + getEmailAddress().hashCode();
-        result = 31 * result + (getExclusions() != null ? getExclusions().hashCode() : 0);
-        return result;
+    public void setExcludedBy(ArrayList<Exclusion> excludedBy) {
+        this.excludedBy = excludedBy;
     }
 
     @Override

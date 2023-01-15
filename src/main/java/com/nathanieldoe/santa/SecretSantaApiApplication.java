@@ -14,9 +14,11 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @EntityScan
+@EnableJpaAuditing
 @EnableMethodSecurity
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class,
 		ManagementWebSecurityAutoConfiguration.class,
@@ -40,9 +42,9 @@ public class SecretSantaApiApplication {
 //		Person test2 = repository.save(new Person("Person", "Here", "person@test.com"));
 //
 //
-//		test.getExclusions().add(new Exclusion(test, test2, 2023));
+//		test.addExclusion(new Exclusion(test2, 2023));
 //		repository.save(test);
-//
+
 //		test2.getExclusions().add(new Exclusion(test2, test, 2023));
 //		repository.save(test2);
 //

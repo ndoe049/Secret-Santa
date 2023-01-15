@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nathanieldoe.santa.util.PersonExclusionSerializer;
 import jakarta.persistence.*;
 
-import java.util.Objects;
-
 /**
  * The representation of an exclusion to a person for a given year.
  * Each person may have multiple exclusions associated with themselves.
@@ -31,11 +29,13 @@ public class Exclusion {
     @Column(name = "exclude_year", nullable = false)
     int year;
 
-    public Exclusion() {
-    }
+
+    /*
+     * JPA no-arg
+     */
+    public Exclusion() {}
 
     /**
-     * @param sender Person that is the sender
      * @param receiver Person to exclude from being picked as a receiver
      * @param year The secret santa year the exclusion should apply to
      */
@@ -53,6 +53,14 @@ public class Exclusion {
         this.id = id;
     }
 
+    public Person getSender() {
+        return sender;
+    }
+
+    public void setSender(Person sender) {
+        this.sender = sender;
+    }
+
     public Person getReceiver() {
         return receiver;
     }
@@ -67,24 +75,6 @@ public class Exclusion {
 
     public void setYear(int year) {
         this.year = year;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Exclusion exclusion = (Exclusion) o;
-
-        if (!getReceiver().equals(exclusion.getReceiver())) return false;
-        return Objects.equals(getYear(), exclusion.getYear());
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getReceiver().hashCode();
-        result = 31 * result + getYear();
-        return result;
     }
 
     @Override

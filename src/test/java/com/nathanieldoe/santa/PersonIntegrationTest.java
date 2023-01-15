@@ -91,6 +91,7 @@ class PersonIntegrationTest {
         testEntityManager.persist(first);
         testEntityManager.flush();
 
+        all = personRepository.findAll();
         List<Exclusion> exclusions = exclusionRepository.findAll();
         assertThat(exclusions).isNotNull().isNotEmpty().hasSize(1);
     }
