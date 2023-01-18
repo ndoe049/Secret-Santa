@@ -1,8 +1,8 @@
 FROM openjdk:17-alpine
 
 # Don't run as root
-#RUN addgroup -S spring && adduser -S spring -G spring
-#USER spring:spring
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
 
 # The ARG instruction defines a variable that users can pass at build-time to the builder with the docker build
 # command using the --build-arg <varname>=<value> flag.
@@ -18,7 +18,9 @@ LABEL org.label-schema.build-date="${BUILD_DATE}" \
       org.label-schema.version="${POM_VERSION}"
 
 # Copy jars
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+ARG JAR_FILE=target/secret-santa-api*.jar
+COPY target/*.jar app.jar
+
+EXPOSE 8080
 
 ENTRYPOINT ["java","-jar","/app.jar"]

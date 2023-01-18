@@ -7,7 +7,6 @@ spring:
       ddl-auto: update
     database: postgresql
     open-in-view: false
-  datasource:
     platform: postgres
     url: "${DATASOURCE_URL: jdbc:postgresql://localhost:5432/SecretSanta}"
     username: "${DATASOURCE_USERNAME: db_user}"
