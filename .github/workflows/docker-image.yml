@@ -1,15 +1,14 @@
 name: Docker Image CI
 
 on:
-  push:
+  workflow_run:
+    workflows: [ "Java CI with Maven" ]
     branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
+    types: 
+      - completed
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
