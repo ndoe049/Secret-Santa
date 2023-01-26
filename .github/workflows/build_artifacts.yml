@@ -52,12 +52,6 @@ jobs:
         with:
           name: api-jar
 
-      - name: List Artifacts
-        run: |
-          echo "Here's what we've got"
-          ls -la
-          ls -la target
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
