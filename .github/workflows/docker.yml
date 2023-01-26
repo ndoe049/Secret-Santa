@@ -30,6 +30,7 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          echo "Built container, now pushing to ECR"
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
       - name: Log out of Amazon ECR
