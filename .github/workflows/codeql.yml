@@ -12,11 +12,11 @@
 name: "CodeQL"
 
 on:
-  push:
+  workflow_run:
+    workflows: [ "Java CI with Maven" ]
     branches: [ "develop" ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "develop" ]
+    types:
+      - completed
   schedule:
     - cron: '45 16 * * 6'
 
