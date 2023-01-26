@@ -13,7 +13,7 @@ name: "CodeQL"
 
 on:
   workflow_run:
-    workflows: [ "Java CI with Maven" ]
+    workflows: [ "Maven / Docker Build" ]
     branches: [ "develop" ]
     types:
       - completed
