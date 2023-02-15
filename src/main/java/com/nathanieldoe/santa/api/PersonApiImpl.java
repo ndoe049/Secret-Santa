@@ -56,7 +56,7 @@ public class PersonApiImpl implements PersonApi {
                 int year = request.year() > 0 ? request.year() : LocalDate.now().getYear();
                 LOG.info("Adding exclusion {} to {} for {}", exclusionPersonResult.get().getFullName(), p.getFullName(), year);
 
-                p.getExclusions().add(new Exclusion(p, exclusionPersonResult.get(), year));
+                p.addExclusion(new Exclusion(exclusionPersonResult.get(), year));
                 personRepository.save(p);
 
                 return p;

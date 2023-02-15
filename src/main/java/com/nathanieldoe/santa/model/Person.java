@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The representation of a person (i.e. santa)
@@ -31,11 +32,12 @@ public class Person {
     /**
      * People that should not be allowed to be picked when generating Santa combinations
      */
-    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     List<Exclusion> exclusions = new ArrayList<>();
 
+    //TODO this is not getting populated
     @JsonIgnore
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     List<Exclusion> excludedBy = new ArrayList<>();
 
 
@@ -55,12 +57,12 @@ public class Person {
         this.emailAddress = emailAddress;
     }
 
-//    public void addExclusion(Exclusion exclusion) {
-//        if (Objects.nonNull(exclusion)) {
-//            exclusion.setSender(this);
-//            this.exclusions.add(exclusion);
-//        }
-//    }
+    public void addExclusion(Exclusion exclusion) {
+        if (Objects.nonNull(exclusion)) {
+            exclusion.setSender(this);
+            this.exclusions.add(exclusion);
+        }
+    }
 
     @JsonIgnore
     public String getFullName() {
@@ -103,7 +105,7 @@ public class Person {
         return exclusions;
     }
 
-    public void setExclusions(ArrayList<Exclusion> exclusions) {
+    public void setExclusions(List<Exclusion> exclusions) {
         this.exclusions = exclusions;
     }
 
@@ -111,7 +113,7 @@ public class Person {
         return excludedBy;
     }
 
-    public void setExcludedBy(ArrayList<Exclusion> excludedBy) {
+    public void setExcludedBy(List<Exclusion> excludedBy) {
         this.excludedBy = excludedBy;
     }
 
@@ -123,6 +125,7 @@ public class Person {
                 ", lastName='" + lastName + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", exclusions='" + exclusions.size() + '\'' +
+                ", excludedBy='" + excludedBy.size() + '\'' +
                 '}';
     }
 

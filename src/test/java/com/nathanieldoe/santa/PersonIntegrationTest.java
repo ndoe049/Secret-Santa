@@ -86,7 +86,7 @@ class PersonIntegrationTest {
         Person first = all.get(0);
         Person second = all.get(1);
 
-        first.getExclusions().add(new Exclusion(first, second, LocalDate.now().getYear()));
+        first.addExclusion(new Exclusion(second, LocalDate.now().getYear()));
 
         testEntityManager.persist(first);
         testEntityManager.flush();
@@ -104,8 +104,11 @@ class PersonIntegrationTest {
         testEntityManager.remove(first);
         testEntityManager.flush();
 
-        assertThat(exclusionRepository.findAll()).isNotNull().isEmpty();
-        assertThat(personRepository.findAll()).isNotNull().hasSize(1);
+        List<Exclusion> exclusions = exclusionRepository.findAll();
+        assertThat(exclusions).isNotNull().isEmpty();
+
+        List<Person> people = personRepository.findAll();
+        assertThat(people).isNotNull().hasSize(1);
     }
 
     @Test
@@ -116,8 +119,8 @@ class PersonIntegrationTest {
         Person first = all.get(0);
         Person second = all.get(1);
 
-        first.getExclusions().add(new Exclusion(first, second, LocalDate.now().getYear()));
-        second.getExclusions().add(new Exclusion(second, first, LocalDate.now().getYear()));
+        first.addExclusion(new Exclusion(second, LocalDate.now().getYear()));
+        second.addExclusion(new Exclusion(first, LocalDate.now().getYear()));
 
         testEntityManager.persist(first);
         testEntityManager.persist(second);
@@ -131,12 +134,29 @@ class PersonIntegrationTest {
     void deletePersonWithCyclicalExclusion() {
         addCyclicalExclusions();
 
+        List<Person> all = personRepository.findAll();
+        List<Exclusion> exclusions = exclusionRepository.findAll();
+
         Person first = personRepository.findAll().get(0);
+
+        for (Exclusion e : first.getExclusions()) {
+            testEntityManager.remove(e);
+        }
+
+        for (Exclusion e : first.getExcludedBy()) {
+            testEntityManager.remove(e);
+        }
+
         testEntityManager.remove(first);
         testEntityManager.flush();
 
-        assertThat(exclusionRepository.findAll()).isNotNull().isEmpty();
-        assertThat(personRepository.findAll()).isNotNull().hasSize(1);
+        exclusions = exclusionRepository.findAll();
+        assertThat(exclusions).isNotNull().isEmpty();
+
+        List<Person> people = personRepository.findAll();
+        assertThat(people).isNotNull().hasSize(1);
+
+
     }
 
 }

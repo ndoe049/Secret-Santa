@@ -39,8 +39,7 @@ public class Exclusion {
      * @param receiver Person to exclude from being picked as a receiver
      * @param year The secret santa year the exclusion should apply to
      */
-    public Exclusion(Person sender, Person receiver, int year) {
-        this.sender = sender;
+    public Exclusion(Person receiver, int year) {
         this.receiver = receiver;
         this.year = year;
     }
