@@ -1,6 +1,11 @@
 spring:
   profiles:
     active: dev
+  datasource:
+    url: "${DATASOURCE_URL: jdbc:postgresql://localhost:5432/SecretSanta}"
+    username: "${DATASOURCE_USERNAME: db_user}"
+    password: "${DATASOURCE_PASSWORD: db_password}"
+    driver-class-name: org.postgresql.Driver
   jpa:
     generate-ddl: true
     hibernate:
@@ -8,10 +13,6 @@ spring:
     database: postgresql
     open-in-view: false
     platform: postgres
-    url: "${DATASOURCE_URL: jdbc:postgresql://localhost:5432/SecretSanta}"
-    username: "${DATASOURCE_USERNAME: db_user}"
-    password: "${DATASOURCE_PASSWORD: db_password}"
-    driverClassName: org.postgresql.Driver
   security:
     oauth2:
       resourceserver:
