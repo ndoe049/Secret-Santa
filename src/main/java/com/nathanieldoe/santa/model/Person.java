@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * The representation of a person (i.e. santa)
@@ -16,8 +14,8 @@ import java.util.Objects;
 public class Person {
 
     @Id
+    @Column
     @GeneratedValue
-    @Column(nullable = false)
     Long id;
 
     @Column(name = "first_name")
@@ -32,14 +30,13 @@ public class Person {
     /**
      * People that should not be allowed to be picked when generating Santa combinations
      */
-    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    List<Exclusion> exclusions = new ArrayList<>();
-
-    //TODO this is not getting populated
-    @JsonIgnore
-    @OneToMany(mappedBy = "receiver", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    List<Exclusion> excludedBy = new ArrayList<>();
-
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "person_exclusion",
+            joinColumns = @JoinColumn(name = "person_id"),
+            inverseJoinColumns = @JoinColumn(name = "exclusion_id")
+    )
+    Set<Exclusion> exclusions = new HashSet<>();
 
     /*
      * JPA no-arg
@@ -59,7 +56,6 @@ public class Person {
 
     public void addExclusion(Exclusion exclusion) {
         if (Objects.nonNull(exclusion)) {
-            exclusion.setSender(this);
             this.exclusions.add(exclusion);
         }
     }
@@ -101,20 +97,12 @@ public class Person {
         this.emailAddress = emailAddress;
     }
 
-    public List<Exclusion> getExclusions() {
+    public Set<Exclusion> getExclusions() {
         return exclusions;
     }
 
-    public void setExclusions(List<Exclusion> exclusions) {
+    public void setExclusions(Set<Exclusion> exclusions) {
         this.exclusions = exclusions;
-    }
-
-    public List<Exclusion> getExcludedBy() {
-        return excludedBy;
-    }
-
-    public void setExcludedBy(List<Exclusion> excludedBy) {
-        this.excludedBy = excludedBy;
     }
 
     @Override
@@ -125,7 +113,6 @@ public class Person {
                 ", lastName='" + lastName + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", exclusions='" + exclusions.size() + '\'' +
-                ", excludedBy='" + excludedBy.size() + '\'' +
                 '}';
     }
 

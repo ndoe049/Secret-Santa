@@ -139,24 +139,14 @@ class PersonIntegrationTest {
 
         Person first = personRepository.findAll().get(0);
 
-        for (Exclusion e : first.getExclusions()) {
-            testEntityManager.remove(e);
-        }
-
-        for (Exclusion e : first.getExcludedBy()) {
-            testEntityManager.remove(e);
-        }
-
         testEntityManager.remove(first);
         testEntityManager.flush();
 
+        all = personRepository.findAll();
+        assertThat(all).isNotNull().hasSize(1);
+
         exclusions = exclusionRepository.findAll();
-        assertThat(exclusions).isNotNull().isEmpty();
-
-        List<Person> people = personRepository.findAll();
-        assertThat(people).isNotNull().hasSize(1);
-
-
+        assertThat(exclusions).isNotNull().hasSize(1);
     }
 
 }

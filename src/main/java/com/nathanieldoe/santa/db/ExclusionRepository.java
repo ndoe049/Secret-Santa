@@ -7,6 +7,4 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ExclusionRepository extends JpaRepository<Exclusion, Long> {
 
-    public void deleteBySenderIdOrReceiverId(Long senderId, Long receiverId);
-
 }

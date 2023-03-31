@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nathanieldoe.santa.util.PersonExclusionSerializer;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * The representation of an exclusion to a person for a given year.
  * Each person may have multiple exclusions associated with themselves.
@@ -13,22 +16,17 @@ import jakarta.persistence.*;
 @Table(name = "exclusions")
 public class Exclusion {
     @Id
+    @Column
     @JsonIgnore
     @GeneratedValue
-    @Column(nullable = false)
     Long id;
 
-    @ManyToOne
-    @JsonIgnore
-    Person sender;
-
-    @ManyToOne
+    @ManyToMany(mappedBy = "exclusions")
     @JsonSerialize(using = PersonExclusionSerializer.class)
-    Person receiver;
+    Set<Person> receiver = new HashSet<>();
 
     @Column(name = "exclude_year", nullable = false)
     int year;
-
 
     /*
      * JPA no-arg
@@ -40,7 +38,7 @@ public class Exclusion {
      * @param year The secret santa year the exclusion should apply to
      */
     public Exclusion(Person receiver, int year) {
-        this.receiver = receiver;
+        this.receiver.add(receiver);
         this.year = year;
     }
 
@@ -52,19 +50,11 @@ public class Exclusion {
         this.id = id;
     }
 
-    public Person getSender() {
-        return sender;
-    }
-
-    public void setSender(Person sender) {
-        this.sender = sender;
-    }
-
-    public Person getReceiver() {
+    public Set<Person> getReceiver() {
         return receiver;
     }
 
-    public void setReceiver(Person receiver) {
+    public void setReceiver(Set<Person> receiver) {
         this.receiver = receiver;
     }
 
@@ -80,7 +70,6 @@ public class Exclusion {
     public String toString() {
         return "Exclusion{" +
                 "id=" + id +
-                ", sender=" + sender.id +
                 ", receiver=" + receiver +
                 ", year=" + year +
                 '}';

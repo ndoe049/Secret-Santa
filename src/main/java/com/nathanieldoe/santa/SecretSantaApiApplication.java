@@ -1,6 +1,8 @@
 package com.nathanieldoe.santa;
 
 import com.nathanieldoe.santa.db.PersonRepository;
+import com.nathanieldoe.santa.model.Exclusion;
+import com.nathanieldoe.santa.model.Person;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -14,12 +16,10 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
-@EntityScan
-@EnableJpaAuditing
 @EnableMethodSecurity
+@EntityScan(basePackageClasses = { Person.class, Exclusion.class })
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class,
 		ManagementWebSecurityAutoConfiguration.class,
 		UserDetailsServiceAutoConfiguration.class})
