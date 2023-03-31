@@ -2,6 +2,8 @@ package com.nathanieldoe.santa.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -31,6 +33,7 @@ public class Person {
      * People that should not be allowed to be picked when generating Santa combinations
      */
     @ManyToMany(cascade = { CascadeType.ALL })
+    @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "person_exclusion",
             joinColumns = @JoinColumn(name = "person_id"),

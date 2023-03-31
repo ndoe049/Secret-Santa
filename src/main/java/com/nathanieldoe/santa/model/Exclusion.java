@@ -70,7 +70,7 @@ public class Exclusion {
     public String toString() {
         return "Exclusion{" +
                 "id=" + id +
-                ", receiver=" + receiver +
+                ", receivers=" + receiver.size() +
                 ", year=" + year +
                 '}';
     }
