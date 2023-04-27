@@ -4,6 +4,8 @@ import com.nathanieldoe.santa.api.model.ExclusionRequest;
 import com.nathanieldoe.santa.api.PersonApiImpl;
 import com.nathanieldoe.santa.api.exception.InvalidExclusionException;
 import com.nathanieldoe.santa.model.Person;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -16,8 +18,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @Tag(name = "Person API")
@@ -31,10 +35,12 @@ public class PersonApiController {
 
     PersonApiImpl api;
 
-    public PersonApiController(PersonApiImpl api) {
-        this.api = api;
-    }
+    ObservationRegistry observationRegistry;
 
+    public PersonApiController(PersonApiImpl api, ObservationRegistry observationRegistry) {
+        this.api = api;
+        this.observationRegistry = observationRegistry;
+    }
 
     /**
      * @return All of the {@link Person}
@@ -42,7 +48,10 @@ public class PersonApiController {
     @Operation(summary = "Find all people")
     @GetMapping(path = "list", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Person>> list() {
-        return ResponseEntity.of(Optional.ofNullable(api.list()));
+        List<Person> all = new ArrayList<>();
+        Observation.createNotStarted("Find all people", observationRegistry)
+                .observe(() -> all.addAll(api.list()));
+        return ResponseEntity.of(Optional.ofNullable(all));
     }
 
 
@@ -54,7 +63,10 @@ public class PersonApiController {
     @Operation(summary = "Find person by ID")
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Person> findById(@PathVariable Long id) {
-        return ResponseEntity.of(Optional.ofNullable(api.fetchById(id)));
+        AtomicReference<Person> person = null;
+        Observation.createNotStarted("Find Person by ID", observationRegistry)
+                .observe(() -> person.set(api.fetchById(id)));
+        return ResponseEntity.of(Optional.ofNullable(person.get()));
     }
 
     /**

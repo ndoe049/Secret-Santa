@@ -33,27 +33,6 @@ public class SecretSantaApiApplication {
 	@Autowired
 	PersonRepository repository;
 
-
-	@PostConstruct
-	private void init()	 {
-//		repository.deleteAll();
-//
-//		Person test = repository.save(new Person("Test", "Man", "test@test.com"));
-//		Person test2 = repository.save(new Person("Person", "Here", "person@test.com"));
-//
-//
-//		test.addExclusion(new Exclusion(test2, 2023));
-//		repository.save(test);
-
-//		test2.getExclusions().add(new Exclusion(test2, test, 2023));
-//		repository.save(test2);
-//
-//		Optional<Person> testP = repository.findFirstByEmailAddressOrderByLastNameAsc("test@test.com");
-//		if (testP.isPresent()) {
-//			repository.delete(testP.get());
-//		}
-	}
-
 	@Bean
 	public OpenAPI secretSantaApi() {
 		return new OpenAPI()
