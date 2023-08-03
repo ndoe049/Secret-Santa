@@ -18,13 +18,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class PersonApiImpl implements PersonApi {
+public class PersonApiService implements PersonApi {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PersonApiImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PersonApiService.class);
 
     private final PersonRepository personRepository;
 
-    public PersonApiImpl(PersonRepository personRepository) {
+    public PersonApiService(PersonRepository personRepository) {
         this.personRepository = personRepository;
     }
 

@@ -1,8 +1,10 @@
 package com.nathanieldoe.santa.api.model;
 
 import com.nathanieldoe.santa.model.Person;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
-public record ExclusionRequest(Person exclusion, int year) {
+public record ExclusionRequest(@Valid Person exclusion, @Min(1900) int year) {
 
     @Override
     public String toString() {

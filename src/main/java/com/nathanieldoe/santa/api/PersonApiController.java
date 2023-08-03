@@ -1,8 +1,7 @@
-package com.nathanieldoe.santa.controller;
+package com.nathanieldoe.santa.api;
 
-import com.nathanieldoe.santa.api.model.ExclusionRequest;
-import com.nathanieldoe.santa.api.PersonApiImpl;
 import com.nathanieldoe.santa.api.exception.InvalidExclusionException;
+import com.nathanieldoe.santa.api.model.ExclusionRequest;
 import com.nathanieldoe.santa.model.Person;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
@@ -15,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Validated
 @RestController
 @Tag(name = "Person API")
 @RequestMapping(PersonApiController.BASE_PATH)
@@ -33,11 +34,11 @@ public class PersonApiController {
 
     public static final String BASE_PATH = "/person";
 
-    PersonApiImpl api;
+    PersonApiService api;
 
     ObservationRegistry observationRegistry;
 
-    public PersonApiController(PersonApiImpl api, ObservationRegistry observationRegistry) {
+    public PersonApiController(PersonApiService api, ObservationRegistry observationRegistry) {
         this.api = api;
         this.observationRegistry = observationRegistry;
     }
@@ -81,15 +82,16 @@ public class PersonApiController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be excluded");
         }
 
-        Optional<Person> response;
+        Person added = Observation.createNotStarted("addExclusion", this.observationRegistry)
+                .observe(() -> {
+                    try {
+                        return api.addExclusion(personId, request);
+                    } catch (InvalidExclusionException e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+                    }
+                });
 
-        try {
-            response = Optional.ofNullable(api.addExclusion(personId, request));
-        } catch (InvalidExclusionException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-
-        return ResponseEntity.of(response);
+        return ResponseEntity.of(Optional.of(added));
     }
 
     /**
@@ -104,7 +106,9 @@ public class PersonApiController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No person available to be persisted");
         }
 
-        return ResponseEntity.of(Optional.ofNullable(api.createOrUpdate(person)));
+        Optional<Person> createdOrUpdated = Observation.createNotStarted("createOrUpdatePerson", this.observationRegistry)
+                .observe(() -> Optional.ofNullable(api.createOrUpdate(person)));
+        return ResponseEntity.of(createdOrUpdated);
     }
 
 
@@ -114,7 +118,8 @@ public class PersonApiController {
     @Operation(summary = "Delete person")
     @DeleteMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable("id") Long personId) {
-        api.delete(personId);
+        Observation.createNotStarted("deletePerson", this.observationRegistry)
+                .observe(() -> api.delete(personId));
         return ResponseEntity.ok().build();
     }
 

@@ -1,6 +1,6 @@
 package com.nathanieldoe.santa;
 
-import com.nathanieldoe.santa.controller.PersonApiController;
+import com.nathanieldoe.santa.api.PersonApiController;
 import com.nathanieldoe.santa.db.PersonRepository;
 import com.nathanieldoe.santa.security.ApiSecurityConfig;
 import org.junit.jupiter.api.Test;

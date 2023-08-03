@@ -1,7 +1,7 @@
 package com.nathanieldoe.santa;
 
-import com.nathanieldoe.santa.api.PersonApiImpl;
-import com.nathanieldoe.santa.controller.PersonApiController;
+import com.nathanieldoe.santa.api.PersonApiService;
+import com.nathanieldoe.santa.api.PersonApiController;
 import com.nathanieldoe.santa.db.PersonRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ class PersonApiControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private PersonApiImpl personApi;
+    private PersonApiService personApi;
 
     @MockBean
     private PersonRepository personRepository;

@@ -2,6 +2,7 @@ package com.nathanieldoe.santa.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -20,12 +21,15 @@ public class Person {
     @GeneratedValue
     Long id;
 
+    @NotNull
     @Column(name = "first_name")
     String firstName;
 
+    @NotNull
     @Column(name = "last_name")
     String lastName;
 
+    @NotNull
     @Column(name = "email_address")
     String emailAddress;
 
